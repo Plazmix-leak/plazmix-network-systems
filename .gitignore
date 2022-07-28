@@ -1,0 +1,15 @@
+/.idea/
+/api/target/
+/common/target/
+/paper-plugin/target/
+/connector/target/
+/protocol/target/
+/server-module/target/
+/server/target/
+
+/api/api.iml
+/common/common.iml
+/paper-plugin/paper-plugin.iml
+/paper-plugin/${CI_PROJECT_DIR}/
+/server/${CI_PROJECT_DIR}/
+/paper-test-plugin/game-api-test-plugin/target/

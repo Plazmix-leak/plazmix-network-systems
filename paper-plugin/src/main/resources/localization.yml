@@ -1,0 +1,5 @@
+default-locale: RU-ru
+
+RU-ru:
+  GAMESTATE_JOIN_DISALLOWED: '&cПодключение на игру недоступно на текущей игровой стадии.'
+  GAME_IS_FULL: '&cИгра переполнена!'

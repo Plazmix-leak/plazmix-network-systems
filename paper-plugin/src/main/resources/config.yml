@@ -1,0 +1,21 @@
+logger:
+  enabled: true
+
+network:
+  enabled: true
+  server-name: 'test'
+  server-type: 'UNDEFINED'
+  modules:
+    redis: {}
+    properties:
+      enabled: true
+      source: RUNTIME
+    localization:
+      enabled: true
+      source: YAML_FILE
+    gamemap:
+      enabled: true
+      source: YAML_FILE
+
+minecraft:
+  enabled: false

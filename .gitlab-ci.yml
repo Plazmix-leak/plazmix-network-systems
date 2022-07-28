@@ -1,0 +1,102 @@
+image: maven:3.3.9-jdk-8
+
+variables:
+  DOCKER_DRIVER: overlay2
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+
+stages:
+  - build
+  - test
+  - upload
+  - publication
+  - indev_upload
+  
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - ${CI_PROJECT_DIR}/build
+    - $CI_PROJECT_DIR/.m2/repository
+
+build:
+  timeout: 5m
+  retry: 1
+  stage: build
+  script:
+    - 'mvn package -T 1C -am -Dmaven.test.skip -s ci_settings.xml'
+
+test:
+  timeout: 5m
+  retry: 1
+  stage: test
+  needs:
+    - 'build'
+  script:
+    - 'mvn test -T 1C -am -s ci_settings.xml'
+
+plugin_upload:
+  timeout: 1m
+  retry: 2
+  stage: upload
+  needs:
+    - 'build'
+    - 'test'
+  only:
+    - main
+  before_script:
+    - which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
+    - eval $(ssh-agent -s)
+    - echo "$CLOUD_SSH_PRIVATE_KEY" | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -p $CLOUD_PORT $CLOUD_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - 'scp -P $CLOUD_PORT build/PlazmixSystemPlugin-jar-with-dependencies.jar $CLOUD_USER@$CLOUD_HOST:~/cloud/templates/dependency/system/plugins'
+
+
+system_publication:
+  timeout: 5m
+  stage: publication
+  only:
+      - main
+  needs:
+    - 'plugin_upload'
+    - 'build'
+    - 'test'
+  script:
+    - 'mvn deploy -T 2C -am -Dmaven.test.skip -s $CI_PROJECT_DIR/ci_settings.xml'
+
+api_publication:
+  timeout: 5m
+  stage: publication
+  only:
+      - main
+  needs:
+    - 'plugin_upload'
+    - 'build'
+    - 'test'
+  script:
+    -  cd api
+    - 'mvn deploy -T 2C -am -Dmaven.test.skip -s $CI_PROJECT_DIR/ci_settings.xml'
+
+indev_plugin_upload:
+  timeout: 5m
+  stage: indev_upload
+  only:
+      - indev
+  needs:
+    - 'build'
+    - 'test'
+  before_script:
+    - which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
+    - eval $(ssh-agent -s)
+    - echo "$CLOUD_SSH_PRIVATE_KEY" | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -p $CLOUD_PORT $CLOUD_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - 'scp -P $CLOUD_PORT build/PlazmixSystemPlugin-jar-with-dependencies.jar $CLOUD_USER@$CLOUD_HOST:~/cloud/templates/dependency/indev_system/plugins'
+
+

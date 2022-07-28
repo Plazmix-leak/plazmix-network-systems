@@ -1,0 +1,76 @@
+package net.plazmix.minecraft.game;
+
+import net.plazmix.minecraft.game.logic.GameStateController;
+import net.plazmix.minecraft.game.logic.MinecraftGameStateController;
+import net.plazmix.minecraft.game.mode.team.WorldTeamGame;
+import net.plazmix.minecraft.game.session.MinecraftWorldTeamGameSession;
+import net.plazmix.util.Result;
+
+import java.util.Collection;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+public class MinecraftWorldTeamGame extends AbstractWorldGame<MinecraftWorldTeamGameSession> implements WorldTeamGame<MinecraftWorldTeamGameSession> {
+
+    private final Supplier<GameStateController> gameStateControllerSupplier;
+
+    public MinecraftWorldTeamGame(String name, Supplier<GameStateController> gameStateControllerSupplier) {
+        super(name);
+        this.gameStateControllerSupplier = gameStateControllerSupplier;
+    }
+
+    @Override
+    public Result<MinecraftWorldTeamGameSession> run(GameWorld world) {
+        return run(world, String.format("%s_%s_session", getName(), world.getName()));
+    }
+
+    @Override
+    public Result<MinecraftWorldTeamGameSession> run(GameWorld world, Consumer<MinecraftWorldTeamGameSession> consumer) {
+        return run(world, String.format("%s_%s_session", getName(), world.getName()), consumer);
+    }
+
+    @Override
+    public Result<MinecraftWorldTeamGameSession> run(GameWorld world, String id) {
+        getGames().stream().filter(session -> !session.isActive()).collect(Collectors.toSet())
+                .forEach(session -> getSessionMap().remove(session.getSessionId()));
+        if (getSessionMap().containsKey(id))
+            return new Result(Result.Status.FAILURE, String.format("Session with id %s is already created!", id));
+        if (getGames().stream().filter(game -> game.getWorld().equals(world)).count() > 0)
+            return new Result(Result.Status.FAILURE, String.format("Session is already created for world %s!", world.getName()));
+        MinecraftWorldTeamGameSession session = new MinecraftWorldTeamGameSession(id, world, gameStateControllerSupplier.get());
+        session.setActive(true);
+        getSessionMap().put(id, session);
+        ((MinecraftGameStateController) session.getStateController()).setCurrentSession(session);
+        session.getStateController().nextState();
+        return new Result(Result.Status.SUCCESS, session);
+    }
+
+    @Override
+    public Result<MinecraftWorldTeamGameSession> run(GameWorld world, String id, Consumer<MinecraftWorldTeamGameSession> consumer) {
+        getGames().stream().filter(session -> !session.isActive()).collect(Collectors.toSet())
+                .forEach(session -> getSessionMap().remove(session.getSessionId()));
+        if (getSessionMap().containsKey(id))
+            return new Result(Result.Status.FAILURE, String.format("Session with id %s is already created!", id));
+        if (getGames().stream().filter(game -> game.getWorld().equals(world)).count() > 0)
+            return new Result(Result.Status.FAILURE, String.format("Session is already created for world %s!", world.getName()));
+        MinecraftWorldTeamGameSession session = new MinecraftWorldTeamGameSession(id, world, gameStateControllerSupplier.get());
+        session.setActive(true);
+        getSessionMap().put(id, session);
+        ((MinecraftGameStateController) session.getStateController()).setCurrentSession(session);
+        session.getStateController().nextState();
+        return new Result(Result.Status.SUCCESS, session);
+    }
+
+    @Override
+    public Collection<MinecraftWorldTeamGameSession> getGames() {
+        return getSessionMap().values();
+    }
+
+    @Override
+    public Optional<MinecraftWorldTeamGameSession> getSessionByWorld(GameWorld world) {
+        return getGames().stream().filter(session -> session.getWorld().equals(world))
+                .findFirst();
+    }
+}

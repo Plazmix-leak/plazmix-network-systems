@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <name>PlazmixSystem</name>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.plazmix</groupId>
+    <artifactId>plazmix-network-systems</artifactId>
+    <version>0.0.1</version>
+    <packaging>pom</packaging>
+
+    <organization>
+        <name>Plazmix Network</name>
+        <url>https://plazmix.net/</url>
+    </organization>
+
+    <url>https://plazmix.net</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <distributionManagement>
+        <repository>
+            <id>plazmix-systems</id>
+            <url>https://gitlab.plazmix.space/api/v4/projects/104/packages/maven</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>plazmix-systems</id>
+            <url>https://gitlab.plazmix.space/api/v4/projects/104/packages/maven</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+
+    <build>
+        <finalName>${project.name}</finalName>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>4.3.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <modules>
+        <module>server</module>
+        <module>connector</module>
+        <module>api</module>
+        <module>paper-plugin</module>
+        <module>protocol</module>
+        <module>server-module</module>
+        <module>common</module>
+
+        <module>paper-test-plugin</module>
+    </modules>
+</project>

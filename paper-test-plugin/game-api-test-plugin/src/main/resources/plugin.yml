@@ -1,0 +1,4 @@
+name: TestGamePlugin
+main: net.plazmix.testplugin.TestGamePlugin
+version: ${project.version}
+depend: [PlazmixSystemPlugin]

@@ -1,0 +1,33 @@
+games:
+  - BEDWARS
+  - SKYWARS
+
+maps:
+  bwmapworld1:
+    title: 'Fantasy'
+    supported-games:
+      - BEDWARS
+    slime-properties:
+      - 'spawnX=0'
+      - 'spawnY=0'
+      - 'spawnZ=0'
+      - 'difficulty=easy'
+      - 'allowMonsters=true'
+      - 'allowAnimals=true'
+      - 'pvp=true'
+      - 'environment=normal'
+      - 'worldtype=default'
+  swmapworld1:
+    title: 'StarCube'
+    supported-games:
+      - SKYWARS
+    slime-properties:
+      - 'spawnX=0'
+      - 'spawnY=0'
+      - 'spawnZ=0'
+      - 'difficulty=normal'
+      - 'allowMonsters=true'
+      - 'allowAnimals=true'
+      - 'pvp=true'
+      - 'environment=the_end'
+      - 'worldtype=flat'
